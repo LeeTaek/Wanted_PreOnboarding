@@ -12,6 +12,8 @@ class ViewController: UIViewController {
     let layout = UICollectionViewLayout()
     let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
     cv.backgroundColor = .cyan
+    cv.isScrollEnabled = false
+    cv.showsVerticalScrollIndicator = false
     return cv
   }()
   
@@ -24,12 +26,15 @@ class ViewController: UIViewController {
     return button
   }()
 
+  var viewModel = ViewModel()
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view.
     addViews()
     setupLayout()
     loadAllButton.addTarget(self, action: #selector(loadAllImage), for: .touchUpInside)
+    createCell()
   }
 
 
@@ -59,9 +64,6 @@ class ViewController: UIViewController {
     collectionView.collectionViewLayout = createContentLayout()
   }
   
-  @objc private func loadAllImage() {
-    print("touched")
-  }
   
   private func createContentLayout() -> UICollectionViewLayout {
     let layout: UICollectionViewCompositionalLayout = {
@@ -94,5 +96,32 @@ class ViewController: UIViewController {
     return layout
   }
   
+  
+  
+  func createCell() {
+    viewModel.diffableDataSource = CollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { (collectionView, indexPath, itemIdentifier) -> UICollectionViewCell? in
+      guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MainCell", for: indexPath) as? MainCell else { return UICollectionViewCell() }
+      
+      cell.loadButton.addTarget(self, action: #selector(self.loadImage), for: .touchUpInside)
+      cell.imageUrl = itemIdentifier
+      return cell
+    })
+
+    let numOfCell = (0..<4).map{ String($0) }
+    viewModel.snapshot.appendSections([0])
+    viewModel.snapshot.appendItems(numOfCell)
+    viewModel.diffableDataSource.apply(viewModel.snapshot, animatingDifferences: true)
+  }
+  
+  
+  @objc private func loadImage() {
+    viewModel.fetchImage()
+    
+  }
+
+  
+  @objc private func loadAllImage() {
+
+  }
 }
 

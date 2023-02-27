@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CollectionViewDiffableDataSource: UICollectionViewDiffableDataSource<Int, Int> { }
+class CollectionViewDiffableDataSource: UICollectionViewDiffableDataSource<Int, String> { }
 
 class MainCell: UICollectionViewCell {
   static let identifier = "MainCell"
@@ -16,6 +16,13 @@ class MainCell: UICollectionViewCell {
     let image = UIImageView()
     image.image = UIImage(systemName: "photo")
     return image
+  }()
+  
+  let progressBar: UIProgressView = {
+    let progressBar = UIProgressView()
+    progressBar.progress = 0.5
+    progressBar.backgroundColor = .blue
+    return progressBar
   }()
   
   let loadButton: UIButton = {
@@ -33,28 +40,51 @@ class MainCell: UICollectionViewCell {
     setupLayout()
   }
   
+  var imageUrl: String! {
+    didSet{
+      self.setupData()
+    }
+  }
+  
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
   
   private func addViews() {
     self.addSubview(image)
+    self.addSubview(progressBar)
     self.addSubview(loadButton)
   }
   
   private func setupLayout() {
     image.translatesAutoresizingMaskIntoConstraints = false
     loadButton.translatesAutoresizingMaskIntoConstraints = false
+    progressBar.translatesAutoresizingMaskIntoConstraints = false
     
     NSLayoutConstraint.activate([
       image.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
       image.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
-      image.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 10),
+      image.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
       image.widthAnchor.constraint(equalTo: self.image.heightAnchor, multiplier: 1.2),
+      image.centerYAnchor.constraint(equalTo: super.centerYAnchor),
+      
+      progressBar.heightAnchor.constraint(equalToConstant: 7),
+      progressBar.leadingAnchor.constraint(equalTo: self.image.trailingAnchor, constant: 10),
+      progressBar.trailingAnchor.constraint(equalTo: self.loadButton.leadingAnchor, constant: -10),
+      progressBar.centerYAnchor.constraint(equalTo: super.centerYAnchor),
       
       loadButton.heightAnchor.constraint(equalToConstant: 40),
       loadButton.widthAnchor.constraint(equalToConstant: 120),
-      loadButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 10)
+      loadButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
+      loadButton.centerYAnchor.constraint(equalTo: super.centerYAnchor)
     ])
+  }
+  
+  private func setupData() {
+    if let imageURL = URL(string: imageUrl),
+       let data = try? Data(contentsOf: imageURL),
+       let image = UIImage(data: data) {
+      self.image.image = image
+    }
   }
 }

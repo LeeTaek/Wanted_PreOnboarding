@@ -13,6 +13,9 @@
 		74BDC34729A9E06F00F62A84 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 74BDC34629A9E06F00F62A84 /* Assets.xcassets */; };
 		74BDC34A29A9E06F00F62A84 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74BDC34829A9E06F00F62A84 /* LaunchScreen.storyboard */; };
 		74BDC35229A9E9CA00F62A84 /* MainCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74BDC35129A9E9CA00F62A84 /* MainCell.swift */; };
+		74BDC35429A9F8E400F62A84 /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74BDC35329A9F8E400F62A84 /* APIService.swift */; };
+		74BDC35629A9FB5A00F62A84 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74BDC35529A9FB5A00F62A84 /* Model.swift */; };
+		74BDC35829AA103200F62A84 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74BDC35729AA103200F62A84 /* ViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +27,9 @@
 		74BDC34929A9E06F00F62A84 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		74BDC34B29A9E06F00F62A84 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		74BDC35129A9E9CA00F62A84 /* MainCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCell.swift; sourceTree = "<group>"; };
+		74BDC35329A9F8E400F62A84 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
+		74BDC35529A9FB5A00F62A84 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		74BDC35729AA103200F62A84 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +69,9 @@
 				74BDC34829A9E06F00F62A84 /* LaunchScreen.storyboard */,
 				74BDC34B29A9E06F00F62A84 /* Info.plist */,
 				74BDC35129A9E9CA00F62A84 /* MainCell.swift */,
+				74BDC35329A9F8E400F62A84 /* APIService.swift */,
+				74BDC35529A9FB5A00F62A84 /* Model.swift */,
+				74BDC35729AA103200F62A84 /* ViewModel.swift */,
 			);
 			path = PreOnboarding;
 			sourceTree = "<group>";
@@ -138,9 +147,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				74BDC34229A9E06E00F62A84 /* ViewController.swift in Sources */,
+				74BDC35429A9F8E400F62A84 /* APIService.swift in Sources */,
 				74BDC33E29A9E06E00F62A84 /* AppDelegate.swift in Sources */,
+				74BDC35629A9FB5A00F62A84 /* Model.swift in Sources */,
 				74BDC35229A9E9CA00F62A84 /* MainCell.swift in Sources */,
 				74BDC34029A9E06E00F62A84 /* SceneDelegate.swift in Sources */,
+				74BDC35829AA103200F62A84 /* ViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
