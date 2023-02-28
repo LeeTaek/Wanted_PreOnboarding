@@ -26,7 +26,7 @@ class ViewModel {
         case .failure:
           print("[ViewModel searchMovies] failure")
         }
-      } receiveValue: { image in
+      } receiveValue: { [unowned self] image in
         DispatchQueue.main.async {
           self.insertSnapshotItem(at: id.rawValue, item: image)
         }
@@ -52,7 +52,7 @@ class ViewModel {
         case .failure:
           print("[ViewModel fetchAllImages] failure")
         }
-      } receiveValue: { imageData in
+      } receiveValue: { [unowned self] imageData in
         // 해당 데이터를 업데이트 할 cell의 index를 구함
         var index: ImageId = .none
         ImageId.allCases.forEach{
@@ -60,7 +60,7 @@ class ViewModel {
             index = $0
           }
         }
-        DispatchQueue.main.async {
+        DispatchQueue.main.sync {
           self.insertSnapshotItem(at: index.rawValue, item: imageData)
         }
       }
@@ -76,9 +76,11 @@ class ViewModel {
   // 해당 인덱스의 Snapshot 변경
   func insertSnapshotItem(at index: Int, item: Image) {
     let currentItem = self.snapshot.itemIdentifiers[index]
-    self.snapshot.insertItems([item], beforeItem: currentItem)
-    self.snapshot.deleteItems([currentItem])
-    self.diffableDataSource.apply(self.snapshot, animatingDifferences: false)
+    if currentItem.id != item.id {
+      self.snapshot.insertItems([item], beforeItem: currentItem)
+      self.snapshot.deleteItems([currentItem])
+      self.diffableDataSource.apply(self.snapshot, animatingDifferences: false)
+    }
   }
 }
 
