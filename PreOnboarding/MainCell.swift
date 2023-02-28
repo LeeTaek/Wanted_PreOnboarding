@@ -7,8 +7,6 @@
 
 import UIKit
 
-class CollectionViewDiffableDataSource: UICollectionViewDiffableDataSource<Int, String> { }
-
 class MainCell: UICollectionViewCell {
   static let identifier = "MainCell"
   
@@ -22,6 +20,7 @@ class MainCell: UICollectionViewCell {
     let progressBar = UIProgressView()
     progressBar.progress = 0.5
     progressBar.backgroundColor = .blue
+    progressBar.trackTintColor = .systemGray
     return progressBar
   }()
   
@@ -40,7 +39,7 @@ class MainCell: UICollectionViewCell {
     setupLayout()
   }
   
-  var imageUrl: String! {
+  var imageInfo: Image! {
     didSet{
       self.setupData()
     }
@@ -68,7 +67,7 @@ class MainCell: UICollectionViewCell {
       image.widthAnchor.constraint(equalTo: self.image.heightAnchor, multiplier: 1.2),
       image.centerYAnchor.constraint(equalTo: super.centerYAnchor),
       
-      progressBar.heightAnchor.constraint(equalToConstant: 7),
+      progressBar.heightAnchor.constraint(equalToConstant: 5),
       progressBar.leadingAnchor.constraint(equalTo: self.image.trailingAnchor, constant: 10),
       progressBar.trailingAnchor.constraint(equalTo: self.loadButton.leadingAnchor, constant: -10),
       progressBar.centerYAnchor.constraint(equalTo: super.centerYAnchor),
@@ -81,10 +80,15 @@ class MainCell: UICollectionViewCell {
   }
   
   private func setupData() {
-    if let imageURL = URL(string: imageUrl),
-       let data = try? Data(contentsOf: imageURL),
-       let image = UIImage(data: data) {
-      self.image.image = image
-    }
+    guard let imageURL = URL(string: imageInfo.download_url) else { return }
+    
+    URLSession.shared.dataTask(with: imageURL) { data, response, _ in
+      guard let imageData = data else { return }
+      DispatchQueue.main.async {
+        self.image.image = UIImage(data: imageData) ?? UIImage(systemName: "photo")
+      }
+    }.resume()
+     
   }
+
 }

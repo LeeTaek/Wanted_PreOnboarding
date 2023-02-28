@@ -19,24 +19,11 @@ class APIService {
       return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
     }
     print(url)
-    return Future { promise in
-      self.cancellable = URLSession.shared
-        .dataTaskPublisher(for: url)
-        .map(\.data)
-        .decode(type: Image.self, decoder: JSONDecoder())
-        .print("APIService")
-        .sink(receiveCompletion: { completion in
-          switch completion{
-           case .finished:
-             print("fetch Image finished")
-           case .failure(let error):
-             print("fetch image error: \(error)")
-             promise(.failure(URLError(.badServerResponse)))    // 실패할 경우 에러값 publisher 반환
-           }
-        }, receiveValue: { data in
-          promise(.success(data))
-        })
-    }
-    .eraseToAnyPublisher()
+    return URLSession.shared
+      .dataTaskPublisher(for: url)
+      .map(\.data)
+      .decode(type: Image.self, decoder: JSONDecoder())
+      .print("[APIService]")
+      .eraseToAnyPublisher()
   }
 }

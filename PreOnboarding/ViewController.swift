@@ -11,7 +11,6 @@ class ViewController: UIViewController {
   let collectionView: UICollectionView = {
     let layout = UICollectionViewLayout()
     let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-    cv.backgroundColor = .cyan
     cv.isScrollEnabled = false
     cv.showsVerticalScrollIndicator = false
     return cv
@@ -21,7 +20,7 @@ class ViewController: UIViewController {
     let button = UIButton()
     button.setTitle("Load All Images", for: .normal)
     button.setTitleColor(.white, for: .normal)
-    button.backgroundColor = .blue
+    button.backgroundColor = .systemBlue
     button.layer.cornerRadius = 20
     return button
   }()
@@ -31,6 +30,7 @@ class ViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view.
+    self.view.backgroundColor = .systemBackground
     addViews()
     setupLayout()
     loadAllButton.addTarget(self, action: #selector(loadAllImage), for: .touchUpInside)
@@ -53,7 +53,7 @@ class ViewController: UIViewController {
       collectionView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
       collectionView.leftAnchor.constraint(equalTo: self.view.leftAnchor),
       collectionView.rightAnchor.constraint(equalTo: self.view.rightAnchor),
-      collectionView.bottomAnchor.constraint(equalTo: self.loadAllButton.topAnchor),
+      collectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
       
       loadAllButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
       loadAllButton.widthAnchor.constraint(equalToConstant: 280),
@@ -99,29 +99,33 @@ class ViewController: UIViewController {
   
   
   func createCell() {
+    // ViewModel에서 변화된 DataSource에 따라 Cell에 적용
     viewModel.diffableDataSource = CollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { (collectionView, indexPath, itemIdentifier) -> UICollectionViewCell? in
       guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MainCell", for: indexPath) as? MainCell else { return UICollectionViewCell() }
       
+      cell.loadButton.tag = indexPath.row
       cell.loadButton.addTarget(self, action: #selector(self.loadImage), for: .touchUpInside)
-      cell.imageUrl = itemIdentifier
+      cell.imageInfo = itemIdentifier
+      
       return cell
     })
-
-    let numOfCell = (0..<4).map{ String($0) }
+    
+    // 초기 CollectionView 레이아웃
+    let numOfCell = (0..<4).map{ Image(id: String($0)) }
     viewModel.snapshot.appendSections([0])
-    viewModel.snapshot.appendItems(numOfCell)
-    viewModel.diffableDataSource.apply(viewModel.snapshot, animatingDifferences: true)
+    viewModel.snapshot.appendItems(numOfCell, toSection: 0)
+    viewModel.diffableDataSource.apply(viewModel.snapshot, animatingDifferences: false)
   }
   
   
-  @objc private func loadImage() {
-    viewModel.fetchImage()
-    
+  @objc private func loadImage(sender: UIButton) {
+    viewModel.initSnapshotImage(at: sender.tag)
+    viewModel.fetchImage(id: ImageId(rawValue: sender.tag) ?? .none)
   }
 
   
   @objc private func loadAllImage() {
-
+    viewModel.fetchAllImages(count: 4)
   }
 }
 

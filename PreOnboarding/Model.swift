@@ -11,9 +11,20 @@ struct Image: Codable, Hashable {
   let id, author: String
   let width, height: Int
   let url, download_url: String
+  
+  init(id: String = UUID().description, author: String = "", width: Int = 0, height: Int = 0, url: String = "", download_url: String = "") {
+    self.id = id
+    self.author = author
+    self.width = width
+    self.height = height
+    self.url = url
+    self.download_url = download_url
+  }
 }
 
-enum ImageId: Int {
+
+
+enum ImageId: Int, CaseIterable {
   case first = 0
   case second = 1
   case third = 2

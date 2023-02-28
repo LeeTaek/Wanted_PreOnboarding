@@ -8,39 +8,77 @@
 import UIKit
 import Combine
 
+class CollectionViewDiffableDataSource: UICollectionViewDiffableDataSource<Int, Image> { }
+
 class ViewModel {
-  var cancellables = Set<AnyCancellable>()
-  @Published var id: ImageId = .none
-  
+  var cancellables = Set<AnyCancellable>()  
   var diffableDataSource: CollectionViewDiffableDataSource!
-  var snapshot = NSDiffableDataSourceSnapshot<Int, String>()
+  var snapshot = NSDiffableDataSourceSnapshot<Int, Image>()
+
   
-  init() {
-    $id
-      .receive(on: RunLoop.main)
-      .sink { (_) in
-        self.fetchImage()
-      }.store(in: &cancellables)
-  }
-
-
-  func fetchImage() {
+  func fetchImage(id: ImageId) {
     APIService.shared.fetchImages(id: id)
-      .print("viewModel fetchImage")
+      .print("[viewModel fetchImage]")
       .sink { completion in
         switch completion {
         case .finished:
-          print("ViewModel searchMovies finished")
+          print("[ViewModel searchMovies] finished")
         case .failure:
-          print("ViewModel searchMovies failure")
+          print("[ViewModel searchMovies] failure")
         }
       } receiveValue: { image in
-        self.snapshot.deleteAllItems()
-        self.snapshot.appendItems([image.url])
-        self.diffableDataSource.apply(self.snapshot, animatingDifferences: true)
+        DispatchQueue.main.async {
+          self.insertSnapshotItem(at: id.rawValue, item: image)
+        }
       }
       .store(in: &cancellables)
   }
   
+  func fetchAllImages(count: Int) {
+    // 이미지 초기화
+    for i in 0..<count {
+      initSnapshotImage(at: i)
+    }
+    
+    let publishers: [AnyPublisher<Image, Error>] = (0..<count).map { APIService.shared.fetchImages(id: ImageId(rawValue: $0) ?? .none) }
+    
+    
+    Publishers.MergeMany(publishers)
+      .print("[viewModel fetchAllImages]")
+      .sink { completion in
+        switch completion {
+        case .finished:
+          print("[ViewModel fetchAllImages] finished")
+        case .failure:
+          print("[ViewModel fetchAllImages] failure")
+        }
+      } receiveValue: { imageData in
+        // 해당 데이터를 업데이트 할 cell의 index를 구함
+        var index: ImageId = .none
+        ImageId.allCases.forEach{
+          if $0.getId().contains(imageData.id) {
+            index = $0
+          }
+        }
+        DispatchQueue.main.async {
+          self.insertSnapshotItem(at: index.rawValue, item: imageData)
+        }
+      }
+      .store(in: &cancellables)
+  }
+  
+  // 해당 스냅샷의 이미지 데이터 초기화
+  func initSnapshotImage(at index: Int) {
+    insertSnapshotItem(at: index, item: Image())
+  }
+  
+  
+  // 해당 인덱스의 Snapshot 변경
+  func insertSnapshotItem(at index: Int, item: Image) {
+    let currentItem = self.snapshot.itemIdentifiers[index]
+    self.snapshot.insertItems([item], beforeItem: currentItem)
+    self.snapshot.deleteItems([currentItem])
+    self.diffableDataSource.apply(self.snapshot, animatingDifferences: false)
+  }
 }
 
