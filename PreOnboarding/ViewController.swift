@@ -110,11 +110,8 @@ class ViewController: UIViewController {
       return cell
     })
     
-    // 초기 CollectionView 레이아웃
-    let numOfCell = (0..<4).map{ Image(id: String($0)) }
-    viewModel.snapshot.appendSections([0])
-    viewModel.snapshot.appendItems(numOfCell, toSection: 0)
-    viewModel.diffableDataSource.apply(viewModel.snapshot, animatingDifferences: false)
+    viewModel.initAllSnapshot()
+  
   }
   
   

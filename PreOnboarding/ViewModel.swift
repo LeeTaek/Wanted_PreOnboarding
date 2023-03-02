@@ -36,9 +36,7 @@ class ViewModel {
   
   func fetchAllImages(count: Int) {
     // 이미지 초기화
-    for i in 0..<count {
-      initSnapshotImage(at: i)
-    }
+    initAllSnapshot()
     
     let publishers: [AnyPublisher<Image, Error>] = (0..<count).map { APIService.shared.fetchImages(id: ImageId(rawValue: $0) ?? .none) }
     
@@ -60,7 +58,7 @@ class ViewModel {
             index = $0
           }
         }
-        DispatchQueue.main.sync {
+        DispatchQueue.main.async {
           self.insertSnapshotItem(at: index.rawValue, item: imageData)
         }
       }
@@ -81,6 +79,15 @@ class ViewModel {
       self.snapshot.deleteItems([currentItem])
       self.diffableDataSource.apply(self.snapshot, animatingDifferences: false)
     }
+  }
+  
+  func initAllSnapshot() {
+    self.snapshot.deleteAllItems()
+    // 초기 CollectionView 레이아웃
+    let numOfCell = (0..<4).map{ Image(id: String($0)) }
+    self.snapshot.appendSections([0])
+    self.snapshot.appendItems(numOfCell, toSection: 0)
+    self.diffableDataSource.apply(self.snapshot, animatingDifferences: false)
   }
 }
 

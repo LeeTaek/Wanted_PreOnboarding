@@ -10,7 +10,7 @@ import UIKit
 class MainCell: UICollectionViewCell {
   static let identifier = "MainCell"
   
-  let image: UIImageView = {
+  let imageView: UIImageView = {
     let image = UIImageView()
     image.image = UIImage(systemName: "photo")
     return image
@@ -50,25 +50,25 @@ class MainCell: UICollectionViewCell {
   }
   
   private func addViews() {
-    self.addSubview(image)
+    self.addSubview(imageView)
     self.addSubview(progressBar)
     self.addSubview(loadButton)
   }
   
   private func setupLayout() {
-    image.translatesAutoresizingMaskIntoConstraints = false
+    imageView.translatesAutoresizingMaskIntoConstraints = false
     loadButton.translatesAutoresizingMaskIntoConstraints = false
     progressBar.translatesAutoresizingMaskIntoConstraints = false
     
     NSLayoutConstraint.activate([
-      image.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
-      image.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
-      image.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
-      image.widthAnchor.constraint(equalTo: self.image.heightAnchor, multiplier: 1.2),
-      image.centerYAnchor.constraint(equalTo: super.centerYAnchor),
+      imageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
+      imageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
+      imageView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
+      imageView.widthAnchor.constraint(equalTo: self.imageView.heightAnchor, multiplier: 1.2),
+      imageView.centerYAnchor.constraint(equalTo: super.centerYAnchor),
       
       progressBar.heightAnchor.constraint(equalToConstant: 5),
-      progressBar.leadingAnchor.constraint(equalTo: self.image.trailingAnchor, constant: 10),
+      progressBar.leadingAnchor.constraint(equalTo: self.imageView.trailingAnchor, constant: 10),
       progressBar.trailingAnchor.constraint(equalTo: self.loadButton.leadingAnchor, constant: -10),
       progressBar.centerYAnchor.constraint(equalTo: super.centerYAnchor),
       
@@ -80,12 +80,13 @@ class MainCell: UICollectionViewCell {
   }
   
   private func setupData() {
+    imageView.image = UIImage(systemName: "photo")
     guard let imageURL = URL(string: imageInfo.download_url) else { return }
     
     URLSession.shared.dataTask(with: imageURL) { data, response, _ in
       guard let imageData = data else { return }
       DispatchQueue.main.async {
-        self.image.image = UIImage(data: imageData) ?? UIImage(systemName: "photo")
+        self.imageView.image = UIImage(data: imageData) ?? UIImage(systemName: "photo")
       }
     }.resume()
      
